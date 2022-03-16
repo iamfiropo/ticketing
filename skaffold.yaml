@@ -1,0 +1,39 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - ./infra/k8s/*
+build:
+  # for gke development
+  local:
+    push: false
+  # googleCloudBuild:
+  #   projectId: ancient-lattice-323804
+  artifacts:
+    # for gke development
+    - image: johnpurist/auth
+      # - image: us.gcr.io/ancient-lattice-323804/auth
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
+    - image: johnpurist/client
+      context: client
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "**/*.js"
+            dest: .
+    - image: johnpurist/tickets
+      context: tickets
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
